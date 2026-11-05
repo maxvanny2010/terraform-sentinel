@@ -34,3 +34,14 @@ Default tags:
 - ManagedBy
 
 Input variables are validated to prevent empty values.
+
+## EC2 Infrastructure
+
+The Terraform configuration defines an EC2 instance with:
+
+- Configurable AMI and instance type
+- Encrypted gp3 root volume
+- IMDSv2 enabled
+- Standard resource tags
+
+These settings will be checked by Sentinel policies.
