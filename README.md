@@ -45,3 +45,11 @@ The Terraform configuration defines an EC2 instance with:
 - Standard resource tags
 
 These settings will be checked by Sentinel policies.
+
+## AMI Version Pinning
+
+The EC2 instance uses a fixed Amazon Linux 2023 AMI for the Ireland region (`eu-west-1`).
+
+The AMI ID was retrieved from AWS Systems Manager Parameter Store and is configured through the `ami_id` variable.
+
+Pinning the AMI prevents unexpected image changes during future deployments. Image updates must be reviewed and applied explicitly.
