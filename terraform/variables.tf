@@ -30,3 +30,14 @@ variable "project_name" {
     error_message = "project_name cannot be empty."
   }
 }
+
+variable "owner" {
+  description = "Team responsible for the infrastructure."
+  type        = string
+  nullable    = false
+
+  validation {
+    condition     = length(trimspace(var.owner)) > 0
+    error_message = "owner cannot be empty."
+  }
+}
