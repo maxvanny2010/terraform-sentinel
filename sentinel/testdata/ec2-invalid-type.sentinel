@@ -1,0 +1,20 @@
+resource_changes = {
+	"aws_instance.web": {
+		"address":       "aws_instance.web",
+		"mode":          "managed",
+		"type":          "aws_instance",
+		"provider_name": "registry.terraform.io/hashicorp/aws",
+		"change": {
+			"actions": ["create"],
+			"after": {
+				"instance_type": "m5.large",
+				"root_block_device": [
+					{"encrypted": true},
+				],
+				"metadata_options": [
+					{"http_tokens": "required"},
+				],
+			},
+		},
+	},
+}

@@ -1,0 +1,24 @@
+import "tfplan/v2" as tfplan
+
+param allowed_instance_types
+
+ec2_instances = filter tfplan.resource_changes as _, resource {
+	resource.type is "aws_instance" and
+		resource.mode is "managed" and
+		("create" in resource.change.actions or
+			"update" in resource.change.actions)
+}
+
+main = rule {
+	all ec2_instances as _, instance {
+		instance.change.after.instance_type in allowed_instance_types and
+			length(instance.change.after.root_block_device else []) > 0 and
+			all instance.change.after.root_block_device as disk {
+				disk.encrypted is true
+			} and
+			length(instance.change.after.metadata_options else []) > 0 and
+			all instance.change.after.metadata_options as metadata {
+				metadata.http_tokens is "required"
+			}
+	}
+}
