@@ -1,0 +1,15 @@
+resource_changes = {
+	"aws_vpc_security_group_ingress_rule.ssh": {
+		"mode": "managed",
+		"type": "aws_vpc_security_group_ingress_rule",
+		"change": {
+			"actions": ["create"],
+			"after": {
+				"cidr_ipv4":   "0.0.0.0/0",
+				"ip_protocol": "tcp",
+				"from_port":   22,
+				"to_port":     22,
+			},
+		},
+	},
+}
