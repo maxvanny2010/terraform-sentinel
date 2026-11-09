@@ -79,3 +79,14 @@ The EC2 instance uses a dedicated Security Group with least-privilege network ru
 - Security Group rules are managed using separate Terraform resources.
 
 Sentinel will validate the network security configuration.
+
+### EC2 Network Integration
+
+The EC2 instance is deployed into the dedicated private subnet and uses the project Security Group.
+
+- Private subnet attachment
+- Dedicated Security Group
+- Public IPv4 assignment disabled
+- No direct internet connectivity
+
+Terraform manages resource dependencies automatically.
