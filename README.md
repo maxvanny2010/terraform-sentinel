@@ -69,4 +69,13 @@ The infrastructure uses a dedicated VPC instead of the AWS Default VPC.
 - No automatic public IP assignment
 - No Internet Gateway or NAT Gateway
 
-Security Group rules and EC2 network attachment will be configured in subsequent steps.
+### Security Group
+
+The EC2 instance uses a dedicated Security Group with least-privilege network rules.
+
+- No inbound traffic is permitted.
+- SSH access from `0.0.0.0/0` is prohibited.
+- Outbound traffic is restricted to HTTPS (TCP 443).
+- Security Group rules are managed using separate Terraform resources.
+
+Sentinel will validate the network security configuration.
