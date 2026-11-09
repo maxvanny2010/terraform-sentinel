@@ -53,3 +53,13 @@ The EC2 instance uses a fixed Amazon Linux 2023 AMI for the Ireland region (`eu-
 The AMI ID was retrieved from AWS Systems Manager Parameter Store and is configured through the `ami_id` variable.
 
 Pinning the AMI prevents unexpected image changes during future deployments. Image updates must be reviewed and applied explicitly.
+
+## Network Infrastructure
+
+The infrastructure uses a dedicated VPC instead of the AWS Default VPC.
+
+- VPC CIDR: `10.0.0.0/16`
+- DNS support and hostnames enabled
+- Standard resource tags
+
+Private subnet, routing, and security rules will be configured in subsequent steps.
