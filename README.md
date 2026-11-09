@@ -148,3 +148,33 @@ Validated using Sentinel CLI v0.41.0:
 - No changes: PASS
 
 All five test scenarios passed using `sentinel test -verbose`.
+
+## EC2 Security Policy
+
+The `ec2-security.sentinel` policy enforces security requirements for AWS EC2 instances before deployment.
+
+### Security Controls
+
+- **Instance Type:** Only approved EC2 instance types are permitted.
+- **EBS Encryption:** Root EBS volumes must be encrypted.
+- **IMDSv2:** Instance metadata must require IMDSv2 (`http_tokens = "required"`).
+- **Missing Configuration:** Empty root block device or metadata settings are rejected.
+- **Enforcement:** `hard-mandatory`.
+
+Approved instance types are configured through the `allowed_instance_types` parameter in `sentinel.hcl`.
+
+### Testing and Validation
+
+Validated locally using Sentinel CLI v0.41.0.
+
+| Test Scenario             | Expected Policy Result | Test Status |
+|---------------------------|------------------------|-------------|
+| Secure EC2 configuration  | Allow                  | PASS        |
+| Unencrypted EBS volume    | Deny                   | PASS        |
+| Unapproved instance type  | Deny                   | PASS        |
+| IMDSv1 permitted          | Deny                   | PASS        |
+| Missing security settings | Deny                   | PASS        |
+
+All five EC2 Security Policy tests passed using `sentinel test -verbose`.
+
+HCP Terraform integration will be validated separately.
