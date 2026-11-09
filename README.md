@@ -90,3 +90,19 @@ The EC2 instance is deployed into the dedicated private subnet and uses the proj
 - No direct internet connectivity
 
 Terraform manages resource dependencies automatically.
+
+### Terraform Plan Validation
+
+The Terraform plan was successfully generated for AWS Ireland (`eu-west-1`).
+
+Validation results:
+- 7 resources to add
+- 0 resources to change
+- 0 resources to destroy
+- EC2 root EBS encryption enabled
+- IMDSv2 required
+- Public IP assignment disabled
+- Private subnet and dedicated Security Group configured
+
+The complete plan output is available in [Terraform Plan Evidence](evidence/terraform-plan.txt).
+No AWS resources were deployed.
