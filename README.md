@@ -62,4 +62,11 @@ The infrastructure uses a dedicated VPC instead of the AWS Default VPC.
 - DNS support and hostnames enabled
 - Standard resource tags
 
-Private subnet, routing, and security rules will be configured in subsequent steps.
+### Private Network
+
+- Private subnet CIDR: `10.0.1.0/24`
+- Dedicated route table with local VPC routing only
+- No automatic public IP assignment
+- No Internet Gateway or NAT Gateway
+
+Security Group rules and EC2 network attachment will be configured in subsequent steps.
