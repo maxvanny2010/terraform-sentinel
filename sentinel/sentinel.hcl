@@ -27,3 +27,8 @@ policy "terraform-supply-chain" {
     ]
   }
 }
+
+policy "network-security" {
+  source            = "./network-security.sentinel"
+  enforcement_level = "hard-mandatory"
+}

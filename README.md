@@ -228,3 +228,28 @@ Provider version validation and Terraform module controls will be added in the n
 All six Terraform Supply Chain test scenarios passed using `sentinel test -verbose`.
 
 HCP Terraform integration will be validated separately.
+
+### Network Security Policy
+
+The Network Security Policy enforces secure inbound access to AWS Security Groups using HashiCorp Sentinel and Terraform
+plan data (`tfplan/v2`).
+
+**Security controls:**
+
+- Blocks public SSH access (TCP port 22) from `0.0.0.0/0` and `::/0`.
+- Blocks unrestricted public access using protocol `-1`.
+- Validates standalone `aws_vpc_security_group_ingress_rule` resources.
+- Validates inline `ingress` rules within `aws_security_group` resources.
+- Evaluates managed resources being created or updated.
+- Allows public HTTPS (TCP port 443).
+
+**Enforcement:** `hard-mandatory`
+
+**Testing and validation:**
+
+- 7 Network Security Policy test scenarios passed.
+- 23 Sentinel test scenarios passed across all four policies.
+- Positive and negative test cases validate allowed and prohibited configurations.
+
+**Scope:** The policy covers the resource types and ingress configurations listed above. Legacy
+`aws_security_group_rule` resources are not currently evaluated.

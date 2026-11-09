@@ -1,0 +1,82 @@
+import "tfplan/v2" as tfplan
+
+ingress_rules = filter tfplan.resource_changes as _, resource {
+	resource.mode is "managed" and
+		resource.type is "aws_vpc_security_group_ingress_rule" and
+		"create" in resource.change.actions or
+		resource.mode is "managed" and
+			resource.type is "aws_vpc_security_group_ingress_rule" and
+			"update" in resource.change.actions
+}
+
+public_ingress = filter ingress_rules as _, resource {
+	(resource.change.after.cidr_ipv4 else "") is "0.0.0.0/0" or
+		(resource.change.after.cidr_ipv6 else "") is "::/0"
+}
+
+all_protocols = filter public_ingress as _, resource {
+	(resource.change.after.ip_protocol else "") is "-1"
+}
+
+tcp_ssh = filter public_ingress as _, resource {
+	(resource.change.after.ip_protocol else "") is "tcp" and
+		(resource.change.after.from_port else -1) <= 22 and
+		(resource.change.after.to_port else -1) >= 22
+}
+
+tcp_ssh_numeric = filter public_ingress as _, resource {
+	(resource.change.after.ip_protocol else "") is "6" and
+		(resource.change.after.from_port else -1) <= 22 and
+		(resource.change.after.to_port else -1) >= 22
+}
+
+security_groups = filter tfplan.resource_changes as _, resource {
+	resource.mode is "managed" and
+		resource.type is "aws_security_group" and
+		"create" in resource.change.actions or
+		resource.mode is "managed" and
+			resource.type is "aws_security_group" and
+			"update" in resource.change.actions
+}
+
+inline_public_ssh = filter security_groups as _, resource {
+	any (resource.change.after.ingress else []) as ingress {
+		"0.0.0.0/0" in (ingress.cidr_blocks else []) and
+			ingress.protocol is "tcp" and
+			ingress.from_port <= 22 and
+			ingress.to_port >= 22
+	}
+}
+
+inline_public_ssh_ipv6 = filter security_groups as _, resource {
+	any (resource.change.after.ingress else []) as ingress {
+		"::/0" in (ingress.ipv6_cidr_blocks else []) and
+			ingress.protocol is "tcp" and
+			ingress.from_port <= 22 and
+			ingress.to_port >= 22
+	}
+}
+
+inline_all_protocols_ipv4 = filter security_groups as _, resource {
+	any (resource.change.after.ingress else []) as ingress {
+		"0.0.0.0/0" in (ingress.cidr_blocks else []) and
+			ingress.protocol is "-1"
+	}
+}
+
+inline_all_protocols_ipv6 = filter security_groups as _, resource {
+	any (resource.change.after.ingress else []) as ingress {
+		"::/0" in (ingress.ipv6_cidr_blocks else []) and
+			ingress.protocol is "-1"
+	}
+}
+
+main = rule {
+	length(all_protocols) is 0 and
+	length(tcp_ssh) is 0 and
+	length(tcp_ssh_numeric) is 0 and
+	length(inline_public_ssh) is 0 and
+	length(inline_public_ssh_ipv6) is 0 and
+	length(inline_all_protocols_ipv4) is 0 and
+	length(inline_all_protocols_ipv6) is 0
+}
