@@ -106,3 +106,17 @@ Validation results:
 
 The complete plan output is available in [Terraform Plan Evidence](evidence/terraform-plan.txt).
 No AWS resources were deployed.
+
+## Sentinel CLI Setup
+
+HashiCorp Sentinel CLI v0.41.0 is installed locally on Windows.
+
+Installation:
+- Download the Sentinel CLI ZIP from HashiCorp.
+- Extract `sentinel.exe` to `C:\Tools\Sentinel`.
+- Add `C:\Tools\Sentinel` to the system PATH.
+
+Validation:
+- `sentinel version` — passed (v0.41.0).
+
+Sentinel CLI will be used to develop and test policies locally.
