@@ -30,3 +30,32 @@ variable "project_name" {
     error_message = "project_name cannot be empty."
   }
 }
+
+variable "owner" {
+  description = "Team responsible for the infrastructure."
+  type        = string
+  nullable    = false
+
+  validation {
+    condition     = length(trimspace(var.owner)) > 0
+    error_message = "owner cannot be empty."
+  }
+}
+
+variable "ami_id" {
+  description = "AMI ID used for the EC2 instance."
+  type        = string
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^ami-[0-9a-f]{8}([0-9a-f]{9})?$", var.ami_id))
+    error_message = "AMI ID must have a valid format."
+  }
+}
+
+variable "instance_type" {
+  description = "EC2 instance type."
+  type        = string
+  default     = "t3.micro"
+  nullable    = false
+}
