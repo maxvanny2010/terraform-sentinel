@@ -1,6 +1,7 @@
 import "tfconfig/v2" as tfconfig
 
 param allowed_provider_sources
+param allowed_module_sources
 
 providers_valid = rule {
 	length(tfconfig.providers) > 0 and
@@ -10,6 +11,15 @@ providers_valid = rule {
 	}
 }
 
+module_calls = tfconfig.module_calls else {}
+
+modules_valid = rule {
+	all module_calls as _, module {
+		module.source in allowed_module_sources and
+			(module.version_constraint else "") is not ""
+	}
+}
+
 main = rule {
-	providers_valid
+	providers_valid and modules_valid
 }

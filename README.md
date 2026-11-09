@@ -199,6 +199,32 @@ Validated locally using Sentinel CLI v0.41.0.
 | Approved AWS provider      | Allow           | PASS   |
 | Unapproved provider source | Deny            | PASS   |
 
-Both provider source validation tests passed using `sentinel test -verbose`.
+Both providers source validation tests passed using `sentinel test -verbose`.
 
 Provider version validation and Terraform module controls will be added in the next development increment.
+
+### Provider Version Validation
+
+- Terraform providers must declare version constraints.
+- Providers without version constraints are rejected.
+
+### Module Source and Version Validation
+
+- Only approved Terraform module sources are permitted.
+- Approved sources are configured through `allowed_module_sources`.
+- External modules must declare version constraints.
+- Unapproved module sources and missing version constraints are rejected.
+- Configurations without module calls are permitted.
+
+### Additional Testing and Validation
+
+| Test Scenario                           | Expected Result | Status |
+|-----------------------------------------|-----------------|--------|
+| Provider without version constraint     | Deny            | PASS   |
+| Approved module with version constraint | Allow           | PASS   |
+| Unapproved module source                | Deny            | PASS   |
+| Module without version constraint       | Deny            | PASS   |
+
+All six Terraform Supply Chain test scenarios passed using `sentinel test -verbose`.
+
+HCP Terraform integration will be validated separately.

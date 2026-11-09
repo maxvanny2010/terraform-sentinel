@@ -22,5 +22,8 @@ policy "terraform-supply-chain" {
     allowed_provider_sources = [
       "registry.terraform.io/hashicorp/aws"
     ]
+    allowed_module_sources = [
+      "terraform-aws-modules/vpc/aws"
+    ]
   }
 }
