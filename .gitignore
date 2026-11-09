@@ -21,6 +21,7 @@ override.tf.json
 .env.*
 !.env.example
 tfplan
+tfplan.json
 
 # OS / editors
 .DS_Store
