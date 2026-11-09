@@ -1,0 +1,19 @@
+import "tfplan/v2" as tfplan
+
+param allowed_regions
+
+aws_resources = filter tfplan.resource_changes as _, resource {
+	resource.mode is "managed" and
+		resource.provider_name is "registry.terraform.io/hashicorp/aws" and
+		"create" in resource.change.actions or
+		resource.mode is "managed" and
+			resource.provider_name is "registry.terraform.io/hashicorp/aws" and
+			"update" in resource.change.actions
+}
+
+main = rule {
+	all aws_resources as _, resource {
+		(resource.change.after_unknown.region else false) is false and
+			(resource.change.after.region else null) in allowed_regions
+	}
+}

@@ -2,7 +2,8 @@
 
 ## Overview
 
-Policy-as-Code framework using Terraform and HashiCorp Sentinel to enforce digital sovereignty and infrastructure security requirements.
+Policy-as-Code framework using Terraform and HashiCorp Sentinel to enforce digital sovereignty and infrastructure
+security requirements.
 
 ## Technologies
 
@@ -28,6 +29,7 @@ Policy-as-Code framework using Terraform and HashiCorp Sentinel to enforce digit
 AWS region and resource tags are configured using Terraform variables.
 
 Default tags:
+
 - Project
 - Environment
 - Owner
@@ -52,7 +54,8 @@ The EC2 instance uses a fixed Amazon Linux 2023 AMI for the Ireland region (`eu-
 
 The AMI ID was retrieved from AWS Systems Manager Parameter Store and is configured through the `ami_id` variable.
 
-Pinning the AMI prevents unexpected image changes during future deployments. Image updates must be reviewed and applied explicitly.
+Pinning the AMI prevents unexpected image changes during future deployments. Image updates must be reviewed and applied
+explicitly.
 
 ## Network Infrastructure
 
@@ -96,6 +99,7 @@ Terraform manages resource dependencies automatically.
 The Terraform plan was successfully generated for AWS Ireland (`eu-west-1`).
 
 Validation results:
+
 - 7 resources to add
 - 0 resources to change
 - 0 resources to destroy
@@ -106,3 +110,41 @@ Validation results:
 
 The complete plan output is available in [Terraform Plan Evidence](evidence/terraform-plan.txt).
 No AWS resources were deployed.
+
+## Sentinel CLI Setup
+
+HashiCorp Sentinel CLI v0.41.0 is installed locally on Windows.
+
+Installation:
+
+- Download the Sentinel CLI ZIP from HashiCorp.
+- Extract `sentinel.exe` to `C:\Tools\Sentinel`.
+- Add `C:\Tools\Sentinel` to the system PATH.
+
+Validation:
+
+- `sentinel version` — passed (v0.41.0).
+
+Sentinel CLI will be used to develop and test policies locally.
+
+## AWS Region Policy
+
+The `aws-region.sentinel` policy restricts AWS resource deployment to approved regions.
+
+- Approved regions are configured through `allowed_regions`.
+- The policy checks planned AWS resource creation and updates.
+- Unknown or unapproved regions are rejected.
+- Plans without relevant changes are allowed.
+- Enforcement level: `hard-mandatory`.
+
+### Local Testing
+
+Validated using Sentinel CLI v0.41.0:
+
+- Approved region: PASS
+- Unapproved region: PASS (rejected as expected)
+- Unknown region: PASS (rejected as expected)
+- Resource replacement: PASS
+- No changes: PASS
+
+All five test scenarios passed using `sentinel test -verbose`.
