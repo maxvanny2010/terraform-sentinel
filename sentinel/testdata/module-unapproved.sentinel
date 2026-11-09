@@ -1,0 +1,14 @@
+providers = {
+	"aws": {
+		"full_name":          "registry.terraform.io/hashicorp/aws",
+		"version_constraint": "~> 6.0",
+	},
+}
+
+module_calls = {
+	"vpc": {
+		"name":               "vpc",
+		"source":             "untrusted/vpc/aws",
+		"version_constraint": "~> 6.0",
+	},
+}
