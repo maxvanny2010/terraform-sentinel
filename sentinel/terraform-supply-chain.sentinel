@@ -1,0 +1,15 @@
+import "tfconfig/v2" as tfconfig
+
+param allowed_provider_sources
+
+providers_valid = rule {
+	length(tfconfig.providers) > 0 and
+	all tfconfig.providers as _, provider {
+		provider.full_name in allowed_provider_sources and
+			(provider.version_constraint else "") is not ""
+	}
+}
+
+main = rule {
+	providers_valid
+}

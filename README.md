@@ -178,3 +178,27 @@ Validated locally using Sentinel CLI v0.41.0.
 All five EC2 Security Policy tests passed using `sentinel test -verbose`.
 
 HCP Terraform integration will be validated separately.
+
+## Terraform Supply Chain Security
+
+The `terraform-supply-chain.sentinel` policy validates Terraform provider sources to reduce supply chain risks.
+
+### Provider Source Validation
+
+- Only approved Terraform provider sources are permitted.
+- Approved sources are configured through `allowed_provider_sources`.
+- The policy requires providers to declare version constraints.
+- Enforcement level: `hard-mandatory`.
+
+### Testing and Validation
+
+Validated locally using Sentinel CLI v0.41.0.
+
+| Test Scenario              | Expected Result | Status |
+|----------------------------|-----------------|--------|
+| Approved AWS provider      | Allow           | PASS   |
+| Unapproved provider source | Deny            | PASS   |
+
+Both provider source validation tests passed using `sentinel test -verbose`.
+
+Provider version validation and Terraform module controls will be added in the next development increment.

@@ -1,0 +1,6 @@
+providers = {
+	"aws": {
+		"full_name":          "registry.terraform.io/untrusted/aws",
+		"version_constraint": "~> 6.0",
+	},
+}

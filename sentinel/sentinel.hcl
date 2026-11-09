@@ -14,3 +14,13 @@ policy "ec2-security" {
     allowed_instance_types = ["t3.micro"]
   }
 }
+policy "terraform-supply-chain" {
+  source            = "./terraform-supply-chain.sentinel"
+  enforcement_level = "hard-mandatory"
+
+  params = {
+    allowed_provider_sources = [
+      "registry.terraform.io/hashicorp/aws"
+    ]
+  }
+}
