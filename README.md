@@ -46,7 +46,7 @@ The Terraform configuration defines an EC2 instance with:
 - IMDSv2 enabled
 - Standard resource tags
 
-These settings will be checked by Sentinel policies.
+These settings are checked by Sentinel policies.
 
 ## AMI Version Pinning
 
@@ -81,7 +81,7 @@ The EC2 instance uses a dedicated Security Group with least-privilege network ru
 - Outbound traffic is restricted to HTTPS (TCP 443).
 - Security Group rules are managed using separate Terraform resources.
 
-Sentinel will validate the network security configuration.
+Sentinel validates the network security configuration.
 
 ### EC2 Network Integration
 
@@ -109,7 +109,7 @@ Validation results:
 - Private subnet and dedicated Security Group configured
 
 The complete plan output is available in [Terraform Plan Evidence](evidence/terraform-plan.txt).
-No AWS resources were deployed.
+This local plan did not deploy AWS resources.
 
 ## Sentinel CLI Setup
 
@@ -125,7 +125,7 @@ Validation:
 
 - `sentinel version` — passed (v0.41.0).
 
-Sentinel CLI will be used to develop and test policies locally.
+Sentinel CLI was used to develop and test policies locally.
 
 ## AWS Region Policy
 
@@ -177,7 +177,7 @@ Validated locally using Sentinel CLI v0.41.0.
 
 All five EC2 Security Policy tests passed using `sentinel test -verbose`.
 
-HCP Terraform integration will be validated separately.
+Cloud-based validation is documented in the HCP Terraform section below.
 
 ## Terraform Supply Chain Security
 
@@ -201,7 +201,8 @@ Validated locally using Sentinel CLI v0.41.0.
 
 Both providers source validation tests passed using `sentinel test -verbose`.
 
-Provider version validation and Terraform module controls will be added in the next development increment.
+Provider version validation and Terraform module controls were added in a subsequent development increment, as
+documented below.
 
 ### Provider Version Validation
 
@@ -227,7 +228,7 @@ Provider version validation and Terraform module controls will be added in the n
 
 All six Terraform Supply Chain test scenarios passed using `sentinel test -verbose`.
 
-HCP Terraform integration will be validated separately.
+Cloud-based validation is documented in the HCP Terraform section below.
 
 ### Network Security Policy
 
@@ -254,78 +255,161 @@ plan data (`tfplan/v2`).
 **Scope:** The policy covers the resource types and ingress configurations listed above. Legacy
 `aws_security_group_rule` resources are not currently evaluated.
 
-## HCP Terraform Integration
+## HCP Terraform Integration and Deployment
 
-The Terraform infrastructure and Sentinel policies are integrated with HCP Terraform using GitHub-based version control.
+The Terraform infrastructure and Sentinel policies were connected to HCP Terraform through GitHub. Infrastructure was
+defined and validated locally before cloud deployment. AWS IAM access was configured for remote execution; an initial
+plan-only run verified the proposed changes, and a later apply run created the resources.
 
-### Configuration
+### 1. HCP Terraform Workspace and Sentinel Policy Set
 
-| Component                   | Configuration                           |
-|-----------------------------|-----------------------------------------|
-| HCP Organization            | ATU-LABS                                |
-| Workspace                   | terraform-sentinel-dev                  |
-| Policy Set                  | atu-lab-policies-vcs                    |
-| GitHub Repository           | maxvanny2010/terraform-sentinel         |
-| VCS Branch                  | master                                  |
-| Terraform Working Directory | terraform                               |
-| Sentinel Policies Directory | sentinel                                |
-| Execution Mode              | Remote                                  |
-| Policy Enforcement          | Hard mandatory                          |
-| AWS Region                  | eu-west-1                               |
-| AWS Authentication          | OIDC with temporary AWS STS credentials |
+| Component                   | Configuration                          |
+|-----------------------------|----------------------------------------|
+| HCP organization            | `ATU-LABS`                             |
+| Workspace                   | `terraform-sentinel-dev`               |
+| GitHub repository           | `maxvanny2010/terraform-sentinel`      |
+| VCS branch                  | `master`                               |
+| Terraform working directory | `terraform`                            |
+| Policy set                  | `atu-lab-policies-vcs`                 |
+| Sentinel policies directory | `sentinel`                             |
+| Execution mode              | Remote                                 |
+| Policy enforcement          | `hard-mandatory`                       |
+| AWS region                  | `eu-west-1`                            |
+| AWS authentication          | OIDC and temporary AWS STS credentials |
 
-### Terraform Plan Validation
+The VCS-backed Sentinel policy set evaluates Terraform runs before deployment.
 
-A plan-only run was executed in HCP Terraform using Terraform v1.17.1.
+![VCS-backed Sentinel Policy Set](evidence/hcp-terraform/policy-set.png)
 
-**Run name:** Sentinel policy validation
+### 2. AWS IAM Authentication for Remote Execution
 
-**Terraform Plan Results:**
+HCP Terraform uses AWS Dynamic Provider Credentials through OIDC and temporary AWS STS credentials. Two separate AWS IAM
+roles were configured for different phases:
 
-- 7 resources to create.
-- 0 resources to change.
-- 0 resources to destroy.
-- No infrastructure was deployed.
+- **Plan role:** `hcp-terraform-sentinel-plan`, with the AWS-managed `AmazonEC2ReadOnlyAccess` policy to inspect
+  resources without allowing infrastructure changes.
+- **Apply role:** `hcp-terraform-sentinel-apply`, with the custom `TerraformSentinelApplyPolicy` to perform
+  project-scoped infrastructure changes.
 
-**Sentinel Policy Evaluation:**
+The Plan role was prepared for the remote planning stage. The Apply role's write permissions were configured and tested
+before deployment.
 
-| Policy                        | Result |
+![AWS IAM Plan Role](evidence/hcp-terraform/aws-plan-role.png)
+
+### 3. HCP Terraform Plan and Sentinel Validation
+
+A **plan-only** run used Terraform v1.17.1 to inspect the proposed infrastructure without deploying it.
+
+- 7 resources to add
+- 0 resources to change
+- 0 resources to destroy
+- 4 of 4 Sentinel policy checks passed
+
+| Sentinel policy               | Result |
 |-------------------------------|--------|
 | AWS Region Policy             | PASS   |
 | EC2 Security Policy           | PASS   |
 | Terraform Supply Chain Policy | PASS   |
 | Network Security Policy       | PASS   |
 
-All four Sentinel policies passed during the HCP Terraform run.
+At this stage, no AWS infrastructure had been created by HCP Terraform.
 
-### AWS IAM Authentication
+![HCP Terraform Plan and Sentinel Validation](evidence/hcp-terraform/terraform-plan.png)
 
-HCP Terraform uses AWS Dynamic Provider Credentials with OIDC and temporary AWS STS credentials.
+### 4. Apply Role Permission Validation
 
-Separate IAM roles are configured for Terraform planning and applying infrastructure changes.
+Before Apply, AWS IAM policy simulation was used to test the permissions of `hcp-terraform-sentinel-apply`.
 
-The `hcp-terraform-sentinel-plan` role uses the AWS-managed `AmazonEC2ReadOnlyAccess` policy to inspect AWS resources
-without granting infrastructure modification permissions.
+| Simulated request                                                       | Decision       |
+|-------------------------------------------------------------------------|----------------|
+| `ec2:CreateVpc` with `Project=terraform-sentinel` and `Environment=dev` | `allowed`      |
+| `ec2:CreateVpc` with `Project=other-project`                            | `implicitDeny` |
+| `ec2:RunInstances` for `t3.micro` with approved project tags            | `allowed`      |
+| `ec2:RunInstances` for `t3.large` with approved project tags            | `implicitDeny` |
 
-The `hcp-terraform-sentinel-apply` role is reserved for infrastructure deployment and is configured separately.
+These simulations validated specific IAM policy decisions; they were not a complete test of every AWS API operation
+needed for deployment.
 
-**AWS IAM Plan Role**
+![AWS IAM Policy Simulation](evidence/hcp-terraform/check_simulator.png)
 
-![AWS IAM Plan Role Permissions](evidence/hcp-terraform/aws-plan-role.png)
+### 5. Successful Terraform Apply
 
-### Evidence
+A subsequent HCP Terraform run passed all four Sentinel policy checks and completed **Apply** successfully.
 
-**VCS-backed Sentinel Policy Set**
+- 7 resources added
+- 0 resources changed
+- 0 resources destroyed
+- HCP Terraform state version created
 
-![HCP Terraform Policy Set](evidence/hcp-terraform/policy-set.png)
+![Successful HCP Terraform Apply](evidence/hcp-terraform/terraform-apply.png)
 
-**Successful Terraform Plan**
+The following managed Terraform resources were created:
 
-![Terraform Plan Validation](evidence/hcp-terraform/terraform-plan.png)
+1. `aws_vpc.main`
+2. `aws_subnet.private`
+3. `aws_route_table.private`
+4. `aws_route_table_association.private`
+5. `aws_security_group.web`
+6. `aws_vpc_security_group_egress_rule.https`
+7. `aws_instance.web`
 
-### Current Status
+![Seven Terraform Resources Created](evidence/hcp-terraform/terraform-apply_resources.png)
 
-The Terraform Plan and Sentinel policy evaluation have been completed successfully.
+### 6. AWS Infrastructure Verification
 
-The infrastructure has not yet been deployed. Terraform Apply and infrastructure verification will be documented in a
-subsequent stage.
+#### VPC and Resource Tags
+
+The VPC was created in `eu-west-1` with CIDR `10.0.0.0/16`. Its tags include `Project=terraform-sentinel`,
+`Environment=dev`, `Owner=ATU-LABS`, and `ManagedBy=Terraform`.
+
+![Deployed VPC and Tags](evidence/hcp-terraform/vpc.png)
+
+#### Network Architecture
+
+The VPC contains a dedicated private subnet and route table. The route table is configured for local VPC routing only;
+no Internet Gateway or NAT Gateway was provisioned by this configuration.
+
+![AWS VPC Resource Map](evidence/hcp-terraform/vpc_route-table.png)
+
+#### Private Subnet
+
+- Subnet CIDR: `10.0.1.0/24`
+- Availability Zone: `eu-west-1a`
+- Automatic public IPv4 assignment: Disabled
+- Dedicated route table associated with the subnet
+
+![AWS Private Subnet](evidence/hcp-terraform/subnet.png)
+
+#### EC2 Security Group
+
+- Inbound rules: None
+- Outbound rule: HTTPS, TCP 443, destination `0.0.0.0/0`
+
+The Security Group restricts permitted outbound traffic to TCP port 443. It does not by itself provide internet
+connectivity; the private subnet has no configured internet route.
+
+![AWS Security Group Egress Rule](evidence/hcp-terraform/security-group.png)
+
+#### EC2 Instance
+
+- Instance ID: `i-0cc04f19dc3c8d213`
+- Instance type: `t3.micro`
+- OS image: Amazon Linux 2023
+- State at verification: Running
+- Private IPv4: `10.0.1.107`
+- Public IPv4: None
+- Subnet: Dedicated private subnet
+- IMDSv2: Required
+- SSH key pair: None
+- Root EBS: Encrypted gp3 (specified in the Terraform configuration)
+
+![AWS EC2 Instance Verification](evidence/hcp-terraform/ec2.png)
+
+### 7. Deployment Outcome
+
+The project demonstrated a version-controlled Terraform workflow with local Sentinel testing, HCP Terraform plan
+validation, IAM-based separation of Plan and Apply permissions, mandatory Sentinel policy checks, and successful AWS
+resource provisioning.
+
+All seven planned Terraform resources were created and their main security settings were verified in the AWS Console.
+The screenshots above document the configuration, policy evaluation, deployment and resulting infrastructure.
