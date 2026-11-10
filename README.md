@@ -1,11 +1,12 @@
-# Terraform Digital Sovereignty
+###### ATLANTIC TECHNOLOGICAL UNIVERSITY
+### Cloud Infrastructure Security
+###### Project Documentation | Terraform & Sentinel
 
-## Overview
+#### Overview
 
-Policy-as-Code framework using Terraform and HashiCorp Sentinel to enforce digital sovereignty and infrastructure
-security requirements.
+Terraform and HashiCorp Sentinel are used to check AWS infrastructure security requirements before deployment.
 
-## Technologies
+#### Technologies
 
 - Terraform
 - HashiCorp Sentinel
@@ -13,18 +14,18 @@ security requirements.
 - AWS
 - GitHub
 
-## Terraform Setup
+#### Terraform Setup
 
 - Terraform 1.15+
 - AWS Provider 6.x
 - Provider version locked in `.terraform.lock.hcl`
 
-### Validation
+##### Validation
 
 - `terraform init` — passed
 - `terraform validate` — passed
 
-## AWS Configuration
+#### AWS Configuration
 
 AWS region and resource tags are configured using Terraform variables.
 
@@ -37,7 +38,7 @@ Default tags:
 
 Input variables are validated to prevent empty values.
 
-## EC2 Infrastructure
+#### EC2 Infrastructure
 
 The Terraform configuration defines an EC2 instance with:
 
@@ -48,7 +49,7 @@ The Terraform configuration defines an EC2 instance with:
 
 These settings are checked by Sentinel policies.
 
-## AMI Version Pinning
+#### AMI Version Pinning
 
 The EC2 instance uses a fixed Amazon Linux 2023 AMI for the Ireland region (`eu-west-1`).
 
@@ -57,7 +58,7 @@ The AMI ID was retrieved from AWS Systems Manager Parameter Store and is configu
 Pinning the AMI prevents unexpected image changes during future deployments. Image updates must be reviewed and applied
 explicitly.
 
-## Network Infrastructure
+#### Network Infrastructure
 
 The infrastructure uses a dedicated VPC instead of the AWS Default VPC.
 
@@ -65,14 +66,14 @@ The infrastructure uses a dedicated VPC instead of the AWS Default VPC.
 - DNS support and hostnames enabled
 - Standard resource tags
 
-### Private Network
+##### Private Network
 
 - Private subnet CIDR: `10.0.1.0/24`
 - Dedicated route table with local VPC routing only
 - No automatic public IP assignment
 - No Internet Gateway or NAT Gateway
 
-### Security Group
+##### Security Group
 
 The EC2 instance uses a dedicated Security Group with least-privilege network rules.
 
@@ -83,7 +84,7 @@ The EC2 instance uses a dedicated Security Group with least-privilege network ru
 
 Sentinel validates the network security configuration.
 
-### EC2 Network Integration
+##### EC2 Network Integration
 
 The EC2 instance is deployed into the dedicated private subnet and uses the project Security Group.
 
@@ -94,7 +95,7 @@ The EC2 instance is deployed into the dedicated private subnet and uses the proj
 
 Terraform manages resource dependencies automatically.
 
-### Terraform Plan Validation
+##### Terraform Plan Validation
 
 The Terraform plan was successfully generated for AWS Ireland (`eu-west-1`).
 
@@ -111,7 +112,7 @@ Validation results:
 The complete plan output is available in [Terraform Plan Evidence](evidence/terraform-plan.txt).
 This local plan did not deploy AWS resources.
 
-## Sentinel CLI Setup
+#### Sentinel CLI Setup
 
 HashiCorp Sentinel CLI v0.41.0 is installed locally on Windows.
 
@@ -127,7 +128,7 @@ Validation:
 
 Sentinel CLI was used to develop and test policies locally.
 
-## AWS Region Policy
+#### AWS Region Policy
 
 The `aws-region.sentinel` policy restricts AWS resource deployment to approved regions.
 
@@ -137,7 +138,7 @@ The `aws-region.sentinel` policy restricts AWS resource deployment to approved r
 - Plans without relevant changes are allowed.
 - Enforcement level: `hard-mandatory`.
 
-### Local Testing
+##### Local Testing
 
 Validated using Sentinel CLI v0.41.0:
 
@@ -149,11 +150,11 @@ Validated using Sentinel CLI v0.41.0:
 
 All five test scenarios passed using `sentinel test -verbose`.
 
-## EC2 Security Policy
+#### EC2 Security Policy
 
 The `ec2-security.sentinel` policy enforces security requirements for AWS EC2 instances before deployment.
 
-### Security Controls
+##### Security Controls
 
 - **Instance Type:** Only approved EC2 instance types are permitted.
 - **EBS Encryption:** Root EBS volumes must be encrypted.
@@ -163,53 +164,53 @@ The `ec2-security.sentinel` policy enforces security requirements for AWS EC2 in
 
 Approved instance types are configured through the `allowed_instance_types` parameter in `sentinel.hcl`.
 
-### Testing and Validation
+##### Testing and Validation
 
 Validated locally using Sentinel CLI v0.41.0.
 
 | Test Scenario             | Expected Policy Result | Test Status |
 |---------------------------|------------------------|-------------|
-| Secure EC2 configuration  | Allow                  | PASS        |
-| Unencrypted EBS volume    | Deny                   | PASS        |
-| Unapproved instance type  | Deny                   | PASS        |
-| IMDSv1 permitted          | Deny                   | PASS        |
-| Missing security settings | Deny                   | PASS        |
+| Secure EC2 configuration  | Allow                  | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
+| Unencrypted EBS volume    | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
+| Unapproved instance type  | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
+| IMDSv1 permitted          | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
+| Missing security settings | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
 
 All five EC2 Security Policy tests passed using `sentinel test -verbose`.
 
 Cloud-based validation is documented in the HCP Terraform section below.
 
-## Terraform Supply Chain Security
+#### Terraform Supply Chain Security
 
 The `terraform-supply-chain.sentinel` policy validates Terraform provider sources to reduce supply chain risks.
 
-### Provider Source Validation
+##### Provider Source Validation
 
 - Only approved Terraform provider sources are permitted.
 - Approved sources are configured through `allowed_provider_sources`.
 - The policy requires providers to declare version constraints.
 - Enforcement level: `hard-mandatory`.
 
-### Testing and Validation
+##### Testing and Validation
 
 Validated locally using Sentinel CLI v0.41.0.
 
 | Test Scenario              | Expected Result | Status |
 |----------------------------|-----------------|--------|
-| Approved AWS provider      | Allow           | PASS   |
-| Unapproved provider source | Deny            | PASS   |
+| Approved AWS provider      | Allow           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Unapproved provider source | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
 
 Both providers source validation tests passed using `sentinel test -verbose`.
 
 Provider version validation and Terraform module controls were added in a subsequent development increment, as
 documented below.
 
-### Provider Version Validation
+##### Provider Version Validation
 
 - Terraform providers must declare version constraints.
 - Providers without version constraints are rejected.
 
-### Module Source and Version Validation
+##### Module Source and Version Validation
 
 - Only approved Terraform module sources are permitted.
 - Approved sources are configured through `allowed_module_sources`.
@@ -217,20 +218,20 @@ documented below.
 - Unapproved module sources and missing version constraints are rejected.
 - Configurations without module calls are permitted.
 
-### Additional Testing and Validation
+##### Additional Testing and Validation
 
 | Test Scenario                           | Expected Result | Status |
 |-----------------------------------------|-----------------|--------|
-| Provider without version constraint     | Deny            | PASS   |
-| Approved module with version constraint | Allow           | PASS   |
-| Unapproved module source                | Deny            | PASS   |
-| Module without version constraint       | Deny            | PASS   |
+| Provider without version constraint     | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Approved module with version constraint | Allow           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Unapproved module source                | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Module without version constraint       | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
 
 All six Terraform Supply Chain test scenarios passed using `sentinel test -verbose`.
 
 Cloud-based validation is documented in the HCP Terraform section below.
 
-### Network Security Policy
+##### Network Security Policy
 
 The Network Security Policy enforces secure inbound access to AWS Security Groups using HashiCorp Sentinel and Terraform
 plan data (`tfplan/v2`).
@@ -255,13 +256,13 @@ plan data (`tfplan/v2`).
 **Scope:** The policy covers the resource types and ingress configurations listed above. Legacy
 `aws_security_group_rule` resources are not currently evaluated.
 
-## HCP Terraform Integration and Deployment
+#### HCP Terraform Integration and Deployment
 
 The Terraform infrastructure and Sentinel policies were connected to HCP Terraform through GitHub. Infrastructure was
 defined and validated locally before cloud deployment. AWS IAM access was configured for remote execution; an initial
 plan-only run verified the proposed changes, and a later apply run created the resources.
 
-### 1. HCP Terraform Workspace and Sentinel Policy Set
+##### 1. HCP Terraform Workspace and Sentinel Policy Set
 
 | Component                   | Configuration                          |
 |-----------------------------|----------------------------------------|
@@ -281,7 +282,7 @@ The VCS-backed Sentinel policy set evaluates Terraform runs before deployment.
 
 ![VCS-backed Sentinel Policy Set](evidence/hcp-terraform/policy-set.png)
 
-### 2. AWS IAM Authentication for Remote Execution
+##### 2. AWS IAM Authentication for Remote Execution
 
 HCP Terraform uses AWS Dynamic Provider Credentials through OIDC and temporary AWS STS credentials. Two separate AWS IAM
 roles were configured for different phases:
@@ -296,7 +297,7 @@ before deployment.
 
 ![AWS IAM Plan Role](evidence/hcp-terraform/aws-plan-role.png)
 
-### 3. HCP Terraform Plan and Sentinel Validation
+##### 3. HCP Terraform Plan and Sentinel Validation
 
 A **plan-only** run used Terraform v1.17.1 to inspect the proposed infrastructure without deploying it.
 
@@ -307,16 +308,16 @@ A **plan-only** run used Terraform v1.17.1 to inspect the proposed infrastructur
 
 | Sentinel policy               | Result |
 |-------------------------------|--------|
-| AWS Region Policy             | PASS   |
-| EC2 Security Policy           | PASS   |
-| Terraform Supply Chain Policy | PASS   |
-| Network Security Policy       | PASS   |
+| AWS Region Policy             | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| EC2 Security Policy           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Terraform Supply Chain Policy | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Network Security Policy       | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
 
 At this stage, no AWS infrastructure had been created by HCP Terraform.
 
 ![HCP Terraform Plan and Sentinel Validation](evidence/hcp-terraform/terraform-plan.png)
 
-### 4. Apply Role Permission Validation
+##### 4. Apply Role Permission Validation
 
 Before Apply, AWS IAM policy simulation was used to test the permissions of `hcp-terraform-sentinel-apply`.
 
@@ -332,7 +333,7 @@ needed for deployment.
 
 ![AWS IAM Policy Simulation](evidence/hcp-terraform/check_simulator.png)
 
-### 5. Successful Terraform Apply
+##### 5. Successful Terraform Apply
 
 A subsequent HCP Terraform run passed all four Sentinel policy checks and completed **Apply** successfully.
 
@@ -355,23 +356,23 @@ The following managed Terraform resources were created:
 
 ![Seven Terraform Resources Created](evidence/hcp-terraform/terraform-apply_resources.png)
 
-### 6. AWS Infrastructure Verification
+##### 6. AWS Infrastructure Verification
 
-#### VPC and Resource Tags
+###### VPC and Resource Tags
 
 The VPC was created in `eu-west-1` with CIDR `10.0.0.0/16`. Its tags include `Project=terraform-sentinel`,
 `Environment=dev`, `Owner=ATU-LABS`, and `ManagedBy=Terraform`.
 
 ![Deployed VPC and Tags](evidence/hcp-terraform/vpc.png)
 
-#### Network Architecture
+###### Network Architecture
 
 The VPC contains a dedicated private subnet and route table. The route table is configured for local VPC routing only;
 no Internet Gateway or NAT Gateway was provisioned by this configuration.
 
 ![AWS VPC Resource Map](evidence/hcp-terraform/vpc_route-table.png)
 
-#### Private Subnet
+###### Private Subnet
 
 - Subnet CIDR: `10.0.1.0/24`
 - Availability Zone: `eu-west-1a`
@@ -380,7 +381,7 @@ no Internet Gateway or NAT Gateway was provisioned by this configuration.
 
 ![AWS Private Subnet](evidence/hcp-terraform/subnet.png)
 
-#### EC2 Security Group
+###### EC2 Security Group
 
 - Inbound rules: None
 - Outbound rule: HTTPS, TCP 443, destination `0.0.0.0/0`
@@ -390,7 +391,7 @@ connectivity; the private subnet has no configured internet route.
 
 ![AWS Security Group Egress Rule](evidence/hcp-terraform/security-group.png)
 
-#### EC2 Instance
+###### EC2 Instance
 
 - Instance ID: `i-0cc04f19dc3c8d213`
 - Instance type: `t3.micro`
@@ -405,7 +406,7 @@ connectivity; the private subnet has no configured internet route.
 
 ![AWS EC2 Instance Verification](evidence/hcp-terraform/ec2.png)
 
-### 7. Deployment Outcome
+##### 7. Deployment Outcome
 
 The project demonstrated a version-controlled Terraform workflow with local Sentinel testing, HCP Terraform plan
 validation, IAM-based separation of Plan and Apply permissions, mandatory Sentinel policy checks, and successful AWS
@@ -414,7 +415,7 @@ resource provisioning.
 All seven planned Terraform resources were created and their main security settings were verified in the AWS Console.
 The screenshots above document the configuration, policy evaluation, deployment and resulting infrastructure.
 
-## Infrastructure Cleanup and Terraform Destroy
+#### Infrastructure Cleanup and Terraform Destroy
 
 After successful deployment and security validation, the test infrastructure
 was removed using HCP Terraform.
@@ -422,7 +423,7 @@ was removed using HCP Terraform.
 The destroy operation was executed through the HCP Terraform workspace
 `terraform-sentinel-dev`.
 
-### Destroy Results
+##### Destroy Results
 
 - 0 resources added
 - 0 resources changed
@@ -435,14 +436,14 @@ individual AWS resources.
 
 ![HCP Terraform Destroy](evidence/hcp-terraform/destroy-apply.png)
 
-### AWS Verification
+##### AWS Verification
 
 The AWS EC2 console confirmed that the project instance
 `terraform-sentinel-dev-web` was terminated.
 
 ![AWS EC2 Instance Terminated](evidence/hcp-terraform/ec2-terminated.png)
 
-### Conclusion
+##### Conclusion
 
 The complete infrastructure lifecycle was validated:
 
