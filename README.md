@@ -1,5 +1,7 @@
 ###### ATLANTIC TECHNOLOGICAL UNIVERSITY
+
 ### Cloud Infrastructure Security
+
 ###### Project Documentation | Terraform & Sentinel
 
 #### Overview
@@ -168,13 +170,13 @@ Approved instance types are configured through the `allowed_instance_types` para
 
 Validated locally using Sentinel CLI v0.41.0.
 
-| Test Scenario             | Expected Policy Result | Test Status |
-|---------------------------|------------------------|-------------|
-| Secure EC2 configuration  | Allow                  | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
-| Unencrypted EBS volume    | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
-| Unapproved instance type  | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
-| IMDSv1 permitted          | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
-| Missing security settings | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)        |
+| Test Scenario             | Expected Policy Result | Test Status                                                         |
+|---------------------------|------------------------|---------------------------------------------------------------------|
+| Secure EC2 configuration  | Allow                  | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Unencrypted EBS volume    | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Unapproved instance type  | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| IMDSv1 permitted          | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Missing security settings | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 
 All five EC2 Security Policy tests passed using `sentinel test -verbose`.
 
@@ -195,10 +197,10 @@ The `terraform-supply-chain.sentinel` policy validates Terraform provider source
 
 Validated locally using Sentinel CLI v0.41.0.
 
-| Test Scenario              | Expected Result | Status |
-|----------------------------|-----------------|--------|
-| Approved AWS provider      | Allow           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
-| Unapproved provider source | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Test Scenario              | Expected Result | Status                                                              |
+|----------------------------|-----------------|---------------------------------------------------------------------|
+| Approved AWS provider      | Allow           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Unapproved provider source | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 
 Both providers source validation tests passed using `sentinel test -verbose`.
 
@@ -220,12 +222,12 @@ documented below.
 
 ##### Additional Testing and Validation
 
-| Test Scenario                           | Expected Result | Status |
-|-----------------------------------------|-----------------|--------|
-| Provider without version constraint     | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
-| Approved module with version constraint | Allow           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
-| Unapproved module source                | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
-| Module without version constraint       | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Test Scenario                           | Expected Result | Status                                                              |
+|-----------------------------------------|-----------------|---------------------------------------------------------------------|
+| Provider without version constraint     | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Approved module with version constraint | Allow           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Unapproved module source                | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Module without version constraint       | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 
 All six Terraform Supply Chain test scenarios passed using `sentinel test -verbose`.
 
@@ -306,12 +308,12 @@ A **plan-only** run used Terraform v1.17.1 to inspect the proposed infrastructur
 - 0 resources to destroy
 - 4 of 4 Sentinel policy checks passed
 
-| Sentinel policy               | Result |
-|-------------------------------|--------|
-| AWS Region Policy             | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
-| EC2 Security Policy           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
-| Terraform Supply Chain Policy | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
-| Network Security Policy       | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)   |
+| Sentinel policy               | Result                                                              |
+|-------------------------------|---------------------------------------------------------------------|
+| AWS Region Policy             | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| EC2 Security Policy           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Terraform Supply Chain Policy | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
+| Network Security Policy       | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 
 At this stage, no AWS infrastructure had been created by HCP Terraform.
 
