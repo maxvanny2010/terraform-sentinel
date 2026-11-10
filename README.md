@@ -413,3 +413,44 @@ resource provisioning.
 
 All seven planned Terraform resources were created and their main security settings were verified in the AWS Console.
 The screenshots above document the configuration, policy evaluation, deployment and resulting infrastructure.
+
+## Infrastructure Cleanup and Terraform Destroy
+
+After successful deployment and security validation, the test infrastructure
+was removed using HCP Terraform.
+
+The destroy operation was executed through the HCP Terraform workspace
+`terraform-sentinel-dev`.
+
+### Destroy Results
+
+- 0 resources added
+- 0 resources changed
+- 7 resources destroyed
+- 4 of 4 Sentinel policies passed
+- 0 managed resources remaining in the workspace
+
+The destroy operation completed successfully without manually deleting
+individual AWS resources.
+
+![HCP Terraform Destroy](evidence/hcp-terraform/destroy-apply.png)
+
+### AWS Verification
+
+The AWS EC2 console confirmed that the project instance
+`terraform-sentinel-dev-web` was terminated.
+
+![AWS EC2 Instance Terminated](evidence/hcp-terraform/ec2-terminated.png)
+
+### Conclusion
+
+The complete infrastructure lifecycle was validated:
+
+1. Terraform configuration and validation
+2. Sentinel policy enforcement
+3. Infrastructure planning
+4. Infrastructure deployment
+5. AWS security verification
+6. Controlled infrastructure destruction
+
+All seven Terraform-managed resources were successfully removed.
