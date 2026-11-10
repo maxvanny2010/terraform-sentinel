@@ -253,3 +253,79 @@ plan data (`tfplan/v2`).
 
 **Scope:** The policy covers the resource types and ingress configurations listed above. Legacy
 `aws_security_group_rule` resources are not currently evaluated.
+
+## HCP Terraform Integration
+
+The Terraform infrastructure and Sentinel policies are integrated with HCP Terraform using GitHub-based version control.
+
+### Configuration
+
+| Component                   | Configuration                           |
+|-----------------------------|-----------------------------------------|
+| HCP Organization            | ATU-LABS                                |
+| Workspace                   | terraform-sentinel-dev                  |
+| Policy Set                  | atu-lab-policies-vcs                    |
+| GitHub Repository           | maxvanny2010/terraform-sentinel         |
+| VCS Branch                  | master                                  |
+| Terraform Working Directory | terraform                               |
+| Sentinel Policies Directory | sentinel                                |
+| Execution Mode              | Remote                                  |
+| Policy Enforcement          | Hard mandatory                          |
+| AWS Region                  | eu-west-1                               |
+| AWS Authentication          | OIDC with temporary AWS STS credentials |
+
+### Terraform Plan Validation
+
+A plan-only run was executed in HCP Terraform using Terraform v1.17.1.
+
+**Run name:** Sentinel policy validation
+
+**Terraform Plan Results:**
+
+- 7 resources to create.
+- 0 resources to change.
+- 0 resources to destroy.
+- No infrastructure was deployed.
+
+**Sentinel Policy Evaluation:**
+
+| Policy                        | Result |
+|-------------------------------|--------|
+| AWS Region Policy             | PASS   |
+| EC2 Security Policy           | PASS   |
+| Terraform Supply Chain Policy | PASS   |
+| Network Security Policy       | PASS   |
+
+All four Sentinel policies passed during the HCP Terraform run.
+
+### AWS IAM Authentication
+
+HCP Terraform uses AWS Dynamic Provider Credentials with OIDC and temporary AWS STS credentials.
+
+Separate IAM roles are configured for Terraform planning and applying infrastructure changes.
+
+The `hcp-terraform-sentinel-plan` role uses the AWS-managed `AmazonEC2ReadOnlyAccess` policy to inspect AWS resources
+without granting infrastructure modification permissions.
+
+The `hcp-terraform-sentinel-apply` role is reserved for infrastructure deployment and is configured separately.
+
+**AWS IAM Plan Role**
+
+![AWS IAM Plan Role Permissions](evidence/hcp-terraform/aws-plan-role.png)
+
+### Evidence
+
+**VCS-backed Sentinel Policy Set**
+
+![HCP Terraform Policy Set](evidence/hcp-terraform/policy-set.png)
+
+**Successful Terraform Plan**
+
+![Terraform Plan Validation](evidence/hcp-terraform/terraform-plan.png)
+
+### Current Status
+
+The Terraform Plan and Sentinel policy evaluation have been completed successfully.
+
+The infrastructure has not yet been deployed. Terraform Apply and infrastructure verification will be documented in a
+subsequent stage.
