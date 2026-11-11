@@ -59,3 +59,27 @@ variable "instance_type" {
   default     = "t3.micro"
   nullable    = false
 }
+
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC."
+  type        = string
+  default     = "10.0.0.0/16"
+  nullable    = false
+
+  validation {
+    condition     = can(cidrhost(var.vpc_cidr, 0))
+    error_message = "vpc_cidr must be a valid CIDR block."
+  }
+}
+
+variable "private_subnet_cidr" {
+  description = "CIDR block for the private subnet."
+  type        = string
+  default     = "10.0.1.0/24"
+  nullable    = false
+
+  validation {
+    condition     = can(cidrhost(var.private_subnet_cidr, 0))
+    error_message = "private_subnet_cidr must be a valid CIDR block."
+  }
+}
