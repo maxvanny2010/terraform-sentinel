@@ -83,3 +83,4 @@ variable "private_subnet_cidr" {
     error_message = "private_subnet_cidr must be a valid CIDR block."
   }
 }
+# Network CIDR values are validated before deployment.
