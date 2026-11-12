@@ -152,6 +152,60 @@ Validated using Sentinel CLI v0.41.0:
 
 All five test scenarios passed using `sentinel test -verbose`.
 
+##### Negative Test Evidence
+
+The AWS Region Policy was tested against a non-compliant configuration using `us-east-1`, while only `eu-west-1` is
+permitted.
+
+The Sentinel test passed because the policy correctly rejected the unapproved region (`main = false`).
+
+![AWS Region Policy — Non-Compliant Configuration Rejected](evidence/hcp-terraform/sentinel-region-denied.png)
+
+#### Digital Sovereignty: Decisions and Limitations
+
+The infrastructure is restricted to AWS Ireland (`eu-west-1`) to support the digital sovereignty requirements of this
+project.
+
+**Decisions:**
+
+- **Region restriction:** The Sentinel AWS Region Policy rejects infrastructure changes targeting unapproved regions.
+- **Data residency:** Deploying resources in Ireland supports geographical control over infrastructure and data storage.
+- **Policy enforcement:** The `hard-mandatory` enforcement level prevents deployment when a policy check fails.
+
+**Limitations:**
+
+- **Data replication and backups:** Restricting the AWS region does not automatically prevent data replication or
+  backups outside Ireland.
+- **Administrative access:** Region restrictions do not control where administrators or external service providers
+  access infrastructure from.
+- **Jurisdiction:** Hosting infrastructure in Ireland does not eliminate jurisdictional or legal dependencies on cloud
+  service providers.
+- **Runtime changes:** Sentinel evaluates Terraform plans but does not prevent changes made directly in AWS outside the
+  Terraform workflow.
+
+**Recommendation:**
+
+Additional controls should be considered for data residency, backup locations, access management, and continuous
+compliance monitoring.
+
+#### Design Decisions and Justifications
+
+#### Design Decisions and Justifications
+
+| Design Decision                                                            | Purpose                   | Justification                                                                                                                                                                                                                       |
+|----------------------------------------------------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Restrict AWS deployments to `eu-west-1`                                    | Digital Sovereignty       | Keeps planned infrastructure deployments within the approved Ireland region and rejects deployments to unapproved regions.                                                                                                          |
+| Enforce AWS region restrictions with Sentinel                              | Digital Sovereignty       | Prevents non-compliant Terraform plans from being applied through the HCP Terraform workflow.                                                                                                                                       |
+| Use a private subnet without a public IP address                           | Infrastructure Security   | Reduces direct exposure of the EC2 instance to the public internet.                                                                                                                                                                 |
+| Require encrypted EBS volumes                                              | Infrastructure Security   | Protects stored data against certain risks associated with unencrypted storage.                                                                                                                                                     |
+| Require IMDSv2                                                             | Infrastructure Security   | Reduces risks associated with unauthorized access to EC2 instance metadata.                                                                                                                                                         |
+| Restrict Terraform provider sources and versions                           | IaC Supply Chain Security | Reduces the risk of using unapproved providers and makes dependency changes more predictable.                                                                                                                                       |
+| Restrict external Terraform module sources and require version constraints | IaC Supply Chain Security | The Sentinel policy validates module sources and version constraints when external modules are used. <br/>This project does not use external Terraform modules; the policy was verified using positive and negative test scenarios. |
+| Use `.terraform.lock.hcl`                                                  | IaC Supply Chain Security | Records selected provider versions and checksums to support reproducible dependency installation.                                                                                                                                   |
+| Use `hard-mandatory` Sentinel policies                                     | Policy Enforcement        | Prevents infrastructure changes through HCP Terraform when mandatory security requirements are not satisfied.                                                                                                                       |
+| Use separate AWS IAM roles for Plan and Apply                              | Access Control            | Separates read-only planning permissions from infrastructure modification permissions.                                                                                                                                              |
+| Use GitHub Pull Requests                                                   | Change Management         | Provides version history and a reviewable record of infrastructure changes.                                                                                                                                                         |
+
 #### EC2 Security Policy
 
 The `ec2-security.sentinel` policy enforces security requirements for AWS EC2 instances before deployment.
@@ -260,8 +314,10 @@ plan data (`tfplan/v2`).
 
 #### HCP Terraform Integration and Deployment
 
-The Terraform infrastructure and Sentinel policies were connected to HCP Terraform through GitHub. Infrastructure was
-defined and validated locally before cloud deployment. AWS IAM access was configured for remote execution; an initial
+The Terraform infrastructure and Sentinel policies were connected to HCP Terraform through GitHub. Infrastructure
+was</br>
+defined and validated locally before cloud deployment. AWS IAM access was configured for remote execution; an
+initial</br>
 plan-only run verified the proposed changes, and a later apply run created the resources.
 
 ##### 1. HCP Terraform Workspace and Sentinel Policy Set
@@ -410,11 +466,13 @@ connectivity; the private subnet has no configured internet route.
 
 ##### 7. Deployment Outcome
 
-The project demonstrated a version-controlled Terraform workflow with local Sentinel testing, HCP Terraform plan
-validation, IAM-based separation of Plan and Apply permissions, mandatory Sentinel policy checks, and successful AWS
+The project demonstrated a version-controlled Terraform workflow with local Sentinel testing, HCP Terraform plan</br>
+validation, IAM-based separation of Plan and Apply permissions, mandatory Sentinel policy checks, and successful
+AWS</br>
 resource provisioning.
 
-All seven planned Terraform resources were created and their main security settings were verified in the AWS Console.
+All seven planned Terraform resources were created and their main security settings were verified in the AWS
+Console.</br>
 The screenshots above document the configuration, policy evaluation, deployment and resulting infrastructure.
 
 #### Infrastructure Cleanup and Terraform Destroy
