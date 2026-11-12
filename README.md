@@ -152,6 +152,15 @@ Validated using Sentinel CLI v0.41.0:
 
 All five test scenarios passed using `sentinel test -verbose`.
 
+##### Negative Test Evidence
+
+The AWS Region Policy was tested against a non-compliant configuration using `us-east-1`, while only `eu-west-1` is
+permitted.
+
+The Sentinel test passed because the policy correctly rejected the unapproved region (`main = false`).
+
+![AWS Region Policy — Non-Compliant Configuration Rejected](evidence/hcp-terraform/sentinel-region-denied.png)
+
 #### EC2 Security Policy
 
 The `ec2-security.sentinel` policy enforces security requirements for AWS EC2 instances before deployment.
