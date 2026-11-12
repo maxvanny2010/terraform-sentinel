@@ -1,10 +1,19 @@
-###### ATLANTIC TECHNOLOGICAL UNIVERSITY
+### Policy-as-Code Framework for Digital Sovereignty and IaC Supply Chain Security
 
-### Cloud Infrastructure Security
+**Atlantic Technological University (ATU)**
 
-###### Project Documentation | Terraform & Sentinel
+**Program:** Postgraduate Diploma in Computing in DevOps  
+**Module:** Infrastructure as Code for DevOps Pipelines  
+**Lecturer:** Ruth Lennon  
+**Student:** Maksym Voronianskyi  
+**Student Number:** L00213593  
+**Academic Year:** 2026/2027
 
-#### Overview
+**Technologies:** Terraform, HashiCorp Sentinel, HCP Terraform, AWS, GitHub
+
+---
+
+### Overview
 
 Terraform and HashiCorp Sentinel are used to check AWS infrastructure security requirements before deployment.
 
@@ -24,8 +33,8 @@ Terraform and HashiCorp Sentinel are used to check AWS infrastructure security r
 
 ##### Validation
 
-- `terraform init` — passed
-- `terraform validate` — passed
+- `terraform init`     ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)
+- `terraform validate` ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)
 
 #### AWS Configuration
 
@@ -126,7 +135,7 @@ Installation:
 
 Validation:
 
-- `sentinel version` — passed (v0.41.0).
+- `sentinel version`![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) (v0.41.0).
 
 Sentinel CLI was used to develop and test policies locally.
 
@@ -144,13 +153,14 @@ The `aws-region.sentinel` policy restricts AWS resource deployment to approved r
 
 Validated using Sentinel CLI v0.41.0:
 
-- Approved region: PASS
-- Unapproved region: PASS (rejected as expected)
-- Unknown region: PASS (rejected as expected)
-- Resource replacement: PASS
-- No changes: PASS
+- Approved region:      ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)
+- Unapproved region:    ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) (rejected as expected)
+- Unknown region:       ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) (rejected as expected)
+- Resource replacement: ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)
+- No changes:           ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)
 
-All five test scenarios passed using `sentinel test -verbose`.
+All five test scenarios ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) using
+`sentinel test -verbose`.
 
 ##### Negative Test Evidence
 
@@ -159,7 +169,7 @@ permitted.
 
 The Sentinel test passed because the policy correctly rejected the unapproved region (`main = false`).
 
-![AWS Region Policy — Non-Compliant Configuration Rejected](evidence/hcp-terraform/sentinel-region-denied.png)
+![AWS Region Policy - Non-Compliant Configuration Rejected](evidence/hcp-terraform/sentinel-region-denied.png)
 
 #### Digital Sovereignty: Decisions and Limitations
 
@@ -190,21 +200,19 @@ compliance monitoring.
 
 #### Design Decisions and Justifications
 
-#### Design Decisions and Justifications
-
-| Design Decision                                                            | Purpose                   | Justification                                                                                                                                                                                                                       |
-|----------------------------------------------------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Restrict AWS deployments to `eu-west-1`                                    | Digital Sovereignty       | Keeps planned infrastructure deployments within the approved Ireland region and rejects deployments to unapproved regions.                                                                                                          |
-| Enforce AWS region restrictions with Sentinel                              | Digital Sovereignty       | Prevents non-compliant Terraform plans from being applied through the HCP Terraform workflow.                                                                                                                                       |
-| Use a private subnet without a public IP address                           | Infrastructure Security   | Reduces direct exposure of the EC2 instance to the public internet.                                                                                                                                                                 |
-| Require encrypted EBS volumes                                              | Infrastructure Security   | Protects stored data against certain risks associated with unencrypted storage.                                                                                                                                                     |
-| Require IMDSv2                                                             | Infrastructure Security   | Reduces risks associated with unauthorized access to EC2 instance metadata.                                                                                                                                                         |
-| Restrict Terraform provider sources and versions                           | IaC Supply Chain Security | Reduces the risk of using unapproved providers and makes dependency changes more predictable.                                                                                                                                       |
-| Restrict external Terraform module sources and require version constraints | IaC Supply Chain Security | The Sentinel policy validates module sources and version constraints when external modules are used. <br/>This project does not use external Terraform modules; the policy was verified using positive and negative test scenarios. |
-| Use `.terraform.lock.hcl`                                                  | IaC Supply Chain Security | Records selected provider versions and checksums to support reproducible dependency installation.                                                                                                                                   |
-| Use `hard-mandatory` Sentinel policies                                     | Policy Enforcement        | Prevents infrastructure changes through HCP Terraform when mandatory security requirements are not satisfied.                                                                                                                       |
-| Use separate AWS IAM roles for Plan and Apply                              | Access Control            | Separates read-only planning permissions from infrastructure modification permissions.                                                                                                                                              |
-| Use GitHub Pull Requests                                                   | Change Management         | Provides version history and a reviewable record of infrastructure changes.                                                                                                                                                         |
+| Design Decision                                                            | Purpose                   | Justification                                                                                                                                                                                                                        |
+|----------------------------------------------------------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Restrict AWS deployments to `eu-west-1`                                    | Digital Sovereignty       | Keeps planned infrastructure deployments within the approved Ireland region and rejects deployments to unapproved regions.                                                                                                           |
+| Enforce AWS region restrictions with Sentinel                              | Digital Sovereignty       | Prevents non-compliant Terraform plans from being applied through the HCP Terraform workflow.                                                                                                                                        |
+| Use a private subnet without a public IP address                           | Infrastructure Security   | Reduces direct exposure of the EC2 instance to the public internet.                                                                                                                                                                  |
+| Require encrypted EBS volumes                                              | Infrastructure Security   | Protects stored data against certain risks associated with unencrypted storage.                                                                                                                                                      |
+| Require IMDSv2                                                             | Infrastructure Security   | Reduces risks associated with unauthorized access to EC2 instance metadata.                                                                                                                                                          |
+| Restrict Terraform provider sources and versions                           | IaC Supply Chain Security | Reduces the risk of using unapproved providers and makes dependency changes more predictable.                                                                                                                                        |
+| Restrict external Terraform module sources and require version constraints | IaC Supply Chain Security | The Sentinel policy validates module sources and version constraints when external modules are used.</br>  This project does not use external Terraform modules; the policy was verified using positive and negative test scenarios. |
+| Use `.terraform.lock.hcl`                                                  | IaC Supply Chain Security | Records selected provider versions and checksums to support reproducible dependency installation.                                                                                                                                    |
+| Use `hard-mandatory` Sentinel policies                                     | Policy Enforcement        | Prevents infrastructure changes through HCP Terraform when mandatory security requirements are not satisfied.                                                                                                                        |
+| Use separate AWS IAM roles for Plan and Apply                              | Access Control            | Separates read-only planning permissions from infrastructure modification permissions.                                                                                                                                               |
+| Use GitHub Pull Requests                                                   | Change Management         | Provides version history and a reviewable record of infrastructure changes.                                                                                                                                                          |
 
 #### EC2 Security Policy
 
@@ -232,7 +240,8 @@ Validated locally using Sentinel CLI v0.41.0.
 | IMDSv1 permitted          | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 | Missing security settings | Deny                   | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 
-All five EC2 Security Policy tests passed using `sentinel test -verbose`.
+All five EC2 Security Policy tests ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) using
+`sentinel test -verbose`.
 
 Cloud-based validation is documented in the HCP Terraform section below.
 
@@ -256,7 +265,8 @@ Validated locally using Sentinel CLI v0.41.0.
 | Approved AWS provider      | Allow           | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 | Unapproved provider source | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 
-Both providers source validation tests passed using `sentinel test -verbose`.
+Both provider source validation tests ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) using
+`sentinel test -verbose`.
 
 Provider version validation and Terraform module controls were added in a subsequent development increment, as
 documented below.
@@ -283,7 +293,8 @@ documented below.
 | Unapproved module source                | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 | Module without version constraint       | Deny            | ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) |
 
-All six Terraform Supply Chain test scenarios passed using `sentinel test -verbose`.
+All six Terraform Supply Chain test scenarios ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) using
+`sentinel test -verbose`.
 
 Cloud-based validation is documented in the HCP Terraform section below.
 
@@ -305,8 +316,9 @@ plan data (`tfplan/v2`).
 
 **Testing and validation:**
 
-- 7 Network Security Policy test scenarios passed.
-- 23 Sentinel test scenarios passed across all four policies.
+- 7 Network Security Policy test scenarios ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square).
+- 23 Sentinel test scenarios ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square) across all four
+  policies.
 - Positive and negative test cases validate allowed and prohibited configurations.
 
 **Scope:** The policy covers the resource types and ingress configurations listed above. Legacy
@@ -314,11 +326,9 @@ plan data (`tfplan/v2`).
 
 #### HCP Terraform Integration and Deployment
 
-The Terraform infrastructure and Sentinel policies were connected to HCP Terraform through GitHub. Infrastructure
-was</br>
-defined and validated locally before cloud deployment. AWS IAM access was configured for remote execution; an
-initial</br>
-plan-only run verified the proposed changes, and a later apply run created the resources.
+The Terraform infrastructure and Sentinel policies were connected to HCP Terraform through GitHub. </br>Infrastructure
+was defined and validated locally before cloud deployment.</br> AWS IAM access was configured for remote execution; an
+initial plan-only run verified the proposed changes, and a later apply run created the resources.
 
 ##### 1. HCP Terraform Workspace and Sentinel Policy Set
 
@@ -362,7 +372,7 @@ A **plan-only** run used Terraform v1.17.1 to inspect the proposed infrastructur
 - 7 resources to add
 - 0 resources to change
 - 0 resources to destroy
-- 4 of 4 Sentinel policy checks passed
+- 4 of 4 Sentinel policy checks ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)
 
 | Sentinel policy               | Result                                                              |
 |-------------------------------|---------------------------------------------------------------------|
@@ -466,14 +476,13 @@ connectivity; the private subnet has no configured internet route.
 
 ##### 7. Deployment Outcome
 
-The project demonstrated a version-controlled Terraform workflow with local Sentinel testing, HCP Terraform plan</br>
-validation, IAM-based separation of Plan and Apply permissions, mandatory Sentinel policy checks, and successful
-AWS</br>
-resource provisioning.
+The project demonstrated a version-controlled Terraform workflow with local Sentinel testing, HCP Terraform plan
+validation,</br > IAM-based separation of Plan and Apply permissions, mandatory Sentinel policy checks, and successful
+AWS resource provisioning.
 
 All seven planned Terraform resources were created and their main security settings were verified in the AWS
-Console.</br>
-The screenshots above document the configuration, policy evaluation, deployment and resulting infrastructure.
+Console. </br>The screenshots above document the configuration, policy evaluation, deployment and resulting
+infrastructure.
 
 #### Infrastructure Cleanup and Terraform Destroy
 
@@ -488,7 +497,7 @@ The destroy operation was executed through the HCP Terraform workspace
 - 0 resources added
 - 0 resources changed
 - 7 resources destroyed
-- 4 of 4 Sentinel policies passed
+- 4 of 4 Sentinel policies ![PASS](https://img.shields.io/badge/PASS-2ea44f?style=flat-square)
 - 0 managed resources remaining in the workspace
 
 The destroy operation completed successfully without manually deleting
@@ -515,3 +524,21 @@ The complete infrastructure lifecycle was validated:
 6. Controlled infrastructure destruction
 
 All seven Terraform-managed resources were successfully removed.
+
+---
+
+#### Development Tools and AI Assistance
+
+The Terraform and Sentinel implementation was developed using official HashiCorp and AWS documentation, practical
+testing, and AI-assisted development.
+
+**AI Tool:** ChatGPT (OpenAI)
+
+ChatGPT was used to assist with Terraform configuration, Sentinel policy development, troubleshooting, security reviews,
+and README documentation.
+
+AI-assisted code and documentation were reviewed, adapted, and validated through Terraform commands, Sentinel tests, HCP
+Terraform policy checks, and AWS infrastructure verification.
+
+Final design decisions were based on the assignment requirements, technical documentation, and practical testing
+results.
