@@ -481,7 +481,8 @@ validation,</br > IAM-based separation of Plan and Apply permissions, mandatory 
 AWS resource provisioning.
 
 All seven planned Terraform resources were created and their main security settings were verified in the AWS
-Console. </br>The screenshots above document the configuration, policy evaluation, deployment and resulting infrastructure.
+Console. </br>The screenshots above document the configuration, policy evaluation, deployment and resulting
+infrastructure.
 
 #### Infrastructure Cleanup and Terraform Destroy
 
@@ -523,3 +524,21 @@ The complete infrastructure lifecycle was validated:
 6. Controlled infrastructure destruction
 
 All seven Terraform-managed resources were successfully removed.
+
+---
+
+#### Development Tools and AI Assistance
+
+The Terraform and Sentinel implementation was developed using official HashiCorp and AWS documentation, practical
+testing, and AI-assisted development.
+
+**AI Tool:** ChatGPT (OpenAI)
+
+ChatGPT was used to assist with Terraform configuration, Sentinel policy development, troubleshooting, security reviews,
+and README documentation.
+
+AI-assisted code and documentation were reviewed, adapted, and validated through Terraform commands, Sentinel tests, HCP
+Terraform policy checks, and AWS infrastructure verification.
+
+Final design decisions were based on the assignment requirements, technical documentation, and practical testing
+results.
