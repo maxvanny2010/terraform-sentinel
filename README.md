@@ -161,6 +161,33 @@ The Sentinel test passed because the policy correctly rejected the unapproved re
 
 ![AWS Region Policy — Non-Compliant Configuration Rejected](evidence/hcp-terraform/sentinel-region-denied.png)
 
+#### Digital Sovereignty: Decisions and Limitations
+
+The infrastructure is restricted to AWS Ireland (`eu-west-1`) to support the digital sovereignty requirements of this
+project.
+
+**Decisions:**
+
+- **Region restriction:** The Sentinel AWS Region Policy rejects infrastructure changes targeting unapproved regions.
+- **Data residency:** Deploying resources in Ireland supports geographical control over infrastructure and data storage.
+- **Policy enforcement:** The `hard-mandatory` enforcement level prevents deployment when a policy check fails.
+
+**Limitations:**
+
+- **Data replication and backups:** Restricting the AWS region does not automatically prevent data replication or
+  backups outside Ireland.
+- **Administrative access:** Region restrictions do not control where administrators or external service providers
+  access infrastructure from.
+- **Jurisdiction:** Hosting infrastructure in Ireland does not eliminate jurisdictional or legal dependencies on cloud
+  service providers.
+- **Runtime changes:** Sentinel evaluates Terraform plans but does not prevent changes made directly in AWS outside the
+  Terraform workflow.
+
+**Recommendation:**
+
+Additional controls should be considered for data residency, backup locations, access management, and continuous
+compliance monitoring.
+
 #### EC2 Security Policy
 
 The `ec2-security.sentinel` policy enforces security requirements for AWS EC2 instances before deployment.
