@@ -507,6 +507,32 @@ All six Terraform Supply Chain test scenarios passed using<br/>
 
 Cloud-based validation is documented in the HCP Terraform section below.
 
+##### Supply Chain Security Limitations
+
+The Sentinel policy checks approved provider and module sources and requires<br/>
+version constraints before Apply. It does not control the earlier dependency<br/>
+installation performed during `terraform init`.
+
+Terraform uses `.terraform.lock.hcl` to record provider versions and<br/>
+checksums. Provider packages are checked against the recorded checksums;<br/>
+registry-supplied signing information is also verified when available.<br/>
+See [Dependency Lock File][dependency-lock] and<br/>
+[Plugin Signatures][plugin-signing].
+
+For a production environment, additional supply chain controls could include:
+
+- Installing providers through an approved private mirror.<br/>
+  See [Terraform CLI Configuration][provider-installation].
+- Reviewing provider signing information and package checksums.<br/>
+  See [Plugin Signatures][plugin-signing].
+- Requiring review and approval before updating dependency versions.<br/>
+  See [Dependency Lock File][dependency-lock].
+
+An approved provider mirror and a separate dependency approval process were<br/>
+not implemented in this academic project. It uses the official HashiCorp AWS<br/>
+provider and manages seven AWS resources. The implemented controls focus on<br/>
+Sentinel policy enforcement and reproducible provider installation.
+
 #### Network Security Policy
 
 The Network Security Policy enforces secure inbound access to AWS Security<br/>
@@ -525,7 +551,7 @@ Groups using HashiCorp Sentinel and Terraform plan data (`tfplan/v2`).
 
 Blocking insecure public SSH ingress at plan time follows the policy-as-code<br/>
 security principle discussed in
-[Terraform Best Practices for AWS: 2026 Guide][itmagic]. The article uses OPA as an example; this project uses
+[Terraform Best Practices for AWS: 2026 Guide][itmagic].</br> The article uses OPA as an example; this project uses
 Sentinel.
 
 **Testing and validation:**
@@ -781,6 +807,12 @@ contained zero managed resources.
   November 2026).
 - AWS. *Terraform security best practices*. [Source][aws-security]<br/>
   (Accessed: 13 November 2026).
+- HashiCorp. *Terraform CLI Configuration and Provider Installation*.<br/>
+  [Source][provider-installation] (Accessed: 13 November 2026).
+- HashiCorp. *Terraform Plugin Signatures*.<br/>
+  [Source][plugin-signing] (Accessed: 13 November 2026).
+- HashiCorp. *Terraform Dependency Lock File*.<br/>
+  [Source][dependency-lock] (Accessed: 13 November 2026).
 
 #### Development Tools and AI Assistance
 
@@ -815,3 +847,9 @@ technical documentation, and practical testing results.
 
 [aws-security]:
 https://docs.aws.amazon.com/prescriptive-guidance/latest/terraform-aws-provider-best-practices/security.html
+
+[provider-installation]: https://developer.hashicorp.com/terraform/cli/config/config-file
+
+[plugin-signing]: https://developer.hashicorp.com/terraform/cli/plugins/signing
+
+[dependency-lock]: https://developer.hashicorp.com/terraform/language/files/dependency-lock
