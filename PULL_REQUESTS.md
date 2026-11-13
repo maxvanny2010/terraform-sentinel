@@ -1,8 +1,10 @@
 # GitHub Pull Request History
 
-This document records the development of the Terraform and Sentinel policy-as-code project.
-Pull Requests #1 to #15 have been merged into `master`.
-PR #16 contains the final README updates and this Pull Request history document.
+This document records the development of the Terraform and Sentinel
+policy-as-code project.
+
+The project includes 18 Pull Requests (#1 to #18), documenting
+the implementation, testing, security controls and project documentation.
 
 <table>
   <thead>
@@ -104,6 +106,20 @@ PR #16 contains the final README updates and this Pull Request history document.
       <td>docs: finalize README and pull request history</td>
       <td>Final README and Pull Request history</td>
       <td>Merged</td>
+    </tr>
+    <tr>
+      <td>
+        <a href="https://github.com/maxvanny2010/terraform-sentinel/pull/17">#17</a>
+      </td>
+      <td>docs: add GitHub pull request history</td>
+      <td>Added the Pull Request history document</td>
+      <td>Merged</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/maxvanny2010/terraform-sentinel/pull/18">#18</a></td>
+      <td>docs: clarify supply chain security limitations and references</td>
+      <td>Supply chain limitations, production recommendations and references</td>
+      <td>Draft</td>
     </tr>
   </tbody>
 </table>
